@@ -21,7 +21,7 @@ function expectError(promise) {
   });
 }
 
-describe('main test suite', function () {
+describe('basic test suite', function () {
 
   this.timeout(2000);
 
@@ -32,23 +32,23 @@ describe('main test suite', function () {
   });
   it('throw error for openDatabase args < 2', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase('mydb');
+      var db = openDatabase('testdb');
     }));
   });
   it('throw error for openDatabase args < 3', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase('mydb', 'yolo');
+      var db = openDatabase('testdb', 'yolo');
     }));
   });
 
   it('throw error for openDatabase args < 4', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase('mydb', 'yolo', 'hey');
+      var db = openDatabase('testdb', 'yolo', 'hey');
     }));
   });
 
   it('does a basic database operation', function () {
-    var db = openDatabase('mydb', '1.0', 'yolo', 100000);
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
     return new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
         txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
@@ -65,7 +65,7 @@ describe('main test suite', function () {
   });
 
   it('handles an error', function () {
-    var db = openDatabase('mydb', '1.0', 'yolo', 100000);
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
         txn.executeSql('SELECT foo FROM yolo', [], function (txn, result) {
@@ -77,5 +77,127 @@ describe('main test suite', function () {
       });
     }));
   });
+
+  it('does multiple queries', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
+          resolve(result);
+        }, function (txn, err) {
+          reject(err);
+        });
+      });
+    }).then(function (res) {
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 1);
+      assert.equal(res.rows[0]['1 + 1'], 2);
+
+      return new Promise(function (resolve, reject) {
+        db.transaction(function (txn) {
+          txn.executeSql('SELECT 2 + 1', [], function (txn, result) {
+            resolve(result);
+          }, function (txn, err) {
+            reject(err);
+          });
+        });
+      });
+    }).then(function (res) {
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 1);
+      assert.equal(res.rows[0]['2 + 1'], 3);
+    });
+  });
+
+  it('does multiple queries, same event loop', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        var results = new Array(2);
+        var done = 0;
+        function checkDone() {
+          if (++done === 2) {
+            resolve(results);
+          }
+        }
+
+        txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
+          results[0] = result;
+          checkDone();
+        }, function (txn, err) {
+          reject(err);
+        });
+
+        txn.executeSql('SELECT 2 + 1', [], function (txn, result) {
+          results[1] = result;
+          checkDone();
+        }, function (txn, err) {
+          reject(err);
+        });
+
+      });
+    }).then(function (results) {
+      assert.equal(results[0].rowsAffected, 0);
+      assert.equal(results[0].rows.length, 1);
+      assert.equal(results[0].rows[0]['1 + 1'], 2);
+
+      assert.equal(results[1].rowsAffected, 0);
+      assert.equal(results[1].rows.length, 1);
+      assert.equal(results[1].rows[0]['2 + 1'], 3);
+    });
+  });
+  
+  it('calls transaction complete callback', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called++;
+            txn.executeSql('SELECT 1 + 1', [], function () {
+              called++;
+            });
+          });
+        });
+      }, reject, resolve);
+    }).then(function () {
+      assert.equal(called, 4);
+    });
+  });
+
+  it('calls transaction error callback', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called++;
+            txn.executeSql('SELECT yolo from baz', [], function () {
+              called++;
+            });
+          });
+        });
+      }, resolve, reject);
+    });
+  });
+});
+
+describe('dedicated db test suite', function () {
+
+  this.timeout(10000);
 
 });
