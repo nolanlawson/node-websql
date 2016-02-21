@@ -66,11 +66,63 @@ describe('basic test suite', function () {
     });
   });
 
-  it('handles an error', function () {
+  it('handles an error - select', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
         txn.executeSql('SELECT foo FROM yolo', [], function (txn, result) {
+          resolve(result);
+        }, function (txn, err) {
+          reject(err);
+        });
+      });
+    }));
+  });
+
+  it('handles an error - drop', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+    return expectError(new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('DROP TABLE blargy blah', [], function (txn, result) {
+          resolve(result);
+        }, function (txn, err) {
+          reject(err);
+        });
+      });
+    }));
+  });
+
+  it('handles an error - delete', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+    return expectError(new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('DELETE FROM yolo', [], function (txn, result) {
+          resolve(result);
+        }, function (txn, err) {
+          reject(err);
+        });
+      });
+    }));
+  });
+
+  it('handles an error - create', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+    return expectError(new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('CREATE TABLE blargy blah', [], function (txn, result) {
+          resolve(result);
+        }, function (txn, err) {
+          reject(err);
+        });
+      });
+    }));
+  });
+
+  it('handles an error - insert', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+    return expectError(new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('INSERT INTO blargy blah', [], function (txn, result) {
           resolve(result);
         }, function (txn, err) {
           reject(err);

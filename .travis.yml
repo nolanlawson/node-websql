@@ -8,6 +8,8 @@ env:
   matrix:
   - COMMAND=test
   - COMMAND=test-phantom
+  - COMMAND=coverage
+  - COMMAND=report-coverage
 branches:
   only:
   - master

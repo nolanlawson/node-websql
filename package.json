@@ -24,7 +24,11 @@
     "lint": "jshint -c .jshintrc lib test",
     "test-debug": "mocha --debug-brk test/test.js",
     "test-local": "zuul --no-coverage --local 9000 --ui mocha-bdd test/test.js",
-    "test-phantom": "zuul --no-coverage --phantom --ui mocha-bdd test/test.js"
+    "test-phantom": "zuul --no-coverage --phantom --ui mocha-bdd test/test.js",
+    "test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- test/test.js",
+    "ensure-coverage": "istanbul check-coverage --lines 100 --function 100 --statements 100 --branches 100",
+    "coverage": "npm run test-coverage && npm run ensure-coverage",
+    "report-coverage": "npm run test-coverage && istanbul-coveralls --no-rm"
   },
   "author": "Nolan Lawson <nolan@nolanlawson.com>",
   "license": "Apache-2.0",
@@ -38,10 +42,14 @@
   "devDependencies": {
     "assert": "^1.3.0",
     "bluebird": "^3.3.1",
+    "istanbul": "^0.4.2",
+    "istanbul-coveralls": "^1.0.3",
     "jshint": "2.8.0",
     "mocha": "^2.4.5",
     "phantomjs": "^2.1.3",
     "zuul": "^3.9.0"
   },
-  "files": ["lib"]
+  "files": [
+    "lib"
+  ]
 }

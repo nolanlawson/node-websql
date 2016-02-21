@@ -82,5 +82,32 @@ The versioning and migration APIs
 (i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion)) 
 are not supported. Pull requests welcome!
 
+Testing
+----
+
+First:
+
+    npm install
+
+Main test suite:
+
+    npm test
+
+Linter:
+
+    npm run lint
+
+Test in debug mode (e.g. with the `node-inspector`):
+
+    npm run test-debug
+
+Run the test suite against actual WebSQL in a browser:
+
+    npm run test-local
+    
+Run the actual-WebSQL test against PhantomJS:
+
+    npm run test-phantom
+
 [websql]: https://www.w3.org/TR/webdatabase/
 [sqlite3]: https://github.com/mapbox/node-sqlite3
