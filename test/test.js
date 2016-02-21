@@ -231,6 +231,35 @@ describe('basic test suite', function () {
     });
   });
 
+  it('recovers from errors, returning undefined', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called++;
+            txn.executeSql('SELECT yolo from baz', [], function () {
+              called++;
+            }, function (err) {
+              if (!err) {
+                return reject(new Error('expected an error here'));
+              }
+            });
+          });
+        });
+      }, reject, resolve);
+    }).then(function () {
+      assert.equal(called, 3);
+    });
+  });
+
   it('doesn\'t recover if you return true', function () {
     var db = openDatabase('testdb', '1.0', 'yolo', 100000);
 
@@ -263,6 +292,64 @@ describe('basic test suite', function () {
       }, reject);
     }).then(function () {
       assert.equal(called, 3);
+    });
+  });
+
+  it('queries executed in right order', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = [];
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('a');
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('k');
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('b');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('l');
+          });
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('c');
+            txn.executeSql('SELECT 1 + 1', [], function () {
+              called.push('m');
+            });
+            txn.executeSql('SELECT 1 + 1', [], function () {
+              called.push('n');
+            });
+            txn.executeSql('SELECT yolo from baz', [], function () {
+            }, function () {
+              called.push('e');
+              txn.executeSql('SELECT 1 + 1', [], function () {
+                called.push('f');
+                txn.executeSql('SELECT yolo from baz', [], function () {
+                }, function () {
+                  called.push('h');
+                  txn.executeSql('SELECT 1 + 1', [], function () {
+                    called.push('g');
+                  });
+                });
+                txn.executeSql('SELECT 1 + 1', [], function () {
+                  called.push('o');
+                });
+              });
+            });
+            txn.executeSql('SELECT 1 + 1', [], function () {
+              called.push('i');
+            });
+          });
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('j');
+          });
+        });
+      }, reject, resolve);
+    }).then(function () {
+      assert.deepEqual(called,
+        ["a","k","b","l","c","j","m","n","e","i","f","h","o","g"]);
     });
   });
 
