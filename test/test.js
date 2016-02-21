@@ -3,13 +3,15 @@
 var Promise = require('bluebird');
 Promise.longStackTraces();
 var assert = require('assert');
-var arrayFrom = require('array-from');
 
+/*jshint -W079 */
 var openDatabase;
 
 if (!process.browser) {
+  /*jshint -W020 */
   openDatabase = require('../'); // Node
 } else {
+  /*jshint -W020 */
   openDatabase = window.openDatabase.bind(window);
 }
 
@@ -27,23 +29,23 @@ describe('basic test suite', function () {
 
   it('throw error for openDatabase args < 1', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase();
+      openDatabase();
     }));
   });
   it('throw error for openDatabase args < 2', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase(':memory:');
+      openDatabase(':memory:');
     }));
   });
   it('throw error for openDatabase args < 3', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase(':memory:', 'yolo');
+      openDatabase(':memory:', 'yolo');
     }));
   });
 
   it('throw error for openDatabase args < 4', function () {
     return expectError(Promise.resolve().then(function () {
-      var db = openDatabase(':memory:', 'yolo', 'hey');
+      openDatabase(':memory:', 'yolo', 'hey');
     }));
   });
 
@@ -60,7 +62,7 @@ describe('basic test suite', function () {
     }).then(function (res) {
       assert.equal(res.rowsAffected, 0);
       assert.equal(res.rows.length, 1);
-      assert.equal(res.rows[0]['1 + 1'], 2);
+      assert.equal(res.rows.item(0)['1 + 1'], 2);
     });
   });
 
@@ -90,7 +92,7 @@ describe('basic test suite', function () {
     }).then(function (res) {
       assert.equal(res.rowsAffected, 0);
       assert.equal(res.rows.length, 1);
-      assert.equal(res.rows[0]['1 + 1'], 2);
+      assert.equal(res.rows.item(0)['1 + 1'], 2);
 
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
@@ -104,7 +106,7 @@ describe('basic test suite', function () {
     }).then(function (res) {
       assert.equal(res.rowsAffected, 0);
       assert.equal(res.rows.length, 1);
-      assert.equal(res.rows[0]['2 + 1'], 3);
+      assert.equal(res.rows.item(0)['2 + 1'], 3);
     });
   });
 
@@ -138,11 +140,11 @@ describe('basic test suite', function () {
     }).then(function (results) {
       assert.equal(results[0].rowsAffected, 0);
       assert.equal(results[0].rows.length, 1);
-      assert.equal(results[0].rows[0]['1 + 1'], 2);
+      assert.equal(results[0].rows.item(0)['1 + 1'], 2);
 
       assert.equal(results[1].rowsAffected, 0);
       assert.equal(results[1].rows.length, 1);
-      assert.equal(results[1].rows[0]['2 + 1'], 3);
+      assert.equal(results[1].rows.item(0)['2 + 1'], 3);
     });
   });
   
@@ -373,6 +375,19 @@ function transactionPromise(db, sql, sqlArgs) {
   });
 }
 
+function readTransactionPromise(db, sql, sqlArgs) {
+  return new Promise(function (resolve, reject) {
+    var result;
+    db.readTransaction(function (txn) {
+      txn.executeSql(sql, sqlArgs, function (txn, res) {
+        result = res;
+      });
+    }, reject, function () {
+      resolve(result);
+    });
+  });
+}
+
 function getInsertId(res) {
   try {
     return res.insertId; // WebSQL will normally throw an error on access here
@@ -437,7 +452,7 @@ describe('dedicated db test suite - in-memory', function () {
       assert.equal(getInsertId(res), void 0, 'no insertId');
       assert.equal(res.rowsAffected, 0, '3 rowsAffected == ' + res.rowsAffected);
       assert.equal(res.rows.length, 1, 'rows.length');
-      assert.deepEqual(res.rows[0], {
+      assert.deepEqual(res.rows.item(0), {
         text1: 'foo',
         text2: 'bar'
       });
@@ -463,7 +478,7 @@ describe('dedicated db test suite - in-memory', function () {
       assert.equal(getInsertId(res), void 0, 'no insertId');
       assert.equal(res.rowsAffected, 0, 'rowsAffected');
       assert.equal(res.rows.length, 1, 'rows.length');
-      assert.deepEqual(res.rows[0], {
+      assert.deepEqual(res.rows.item(0), {
         text1: 'baz',
         text2: 'quux'
       });
@@ -507,11 +522,11 @@ describe('dedicated db test suite - in-memory', function () {
       assert.equal(getInsertId(res), void 0, 'no insertId 2');
       assert.equal(res.rowsAffected, 0, 'rowsAffected');
       assert.equal(res.rows.length, 2, 'rows.length');
-      assert.deepEqual(res.rows[0], {
+      assert.deepEqual(res.rows.item(0), {
         text1: 'baz',
         text2: 'quux'
       });
-      assert.deepEqual(res.rows[1], {
+      assert.deepEqual(res.rows.item(1), {
         text1: 'bongo',
         text2: 'haha'
       });
@@ -542,7 +557,7 @@ describe('dedicated db test suite - in-memory', function () {
 
   it('returns correct rowsAffected/insertId - delete', function () {
     var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
-    return transactionPromise(db, sql).then(function (res) {
+    return transactionPromise(db, sql).then(function () {
     }).then(function () {
       var sql = 'DELETE FROM table1';
       return transactionPromise(db, sql);
@@ -564,7 +579,7 @@ describe('dedicated db test suite - in-memory', function () {
 
   it('returns correct rowsAffected/insertId - delete 2', function () {
     var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
-    return transactionPromise(db, sql).then(function (res) {
+    return transactionPromise(db, sql).then(function () {
     }).then(function () {
       var sql = 'DELETE FROM table1';
       return transactionPromise(db, sql);
@@ -635,6 +650,61 @@ describe('dedicated db test suite - in-memory', function () {
     });
   });
 
+  it('valid read transaction', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'SELECT * from table1';
+      return readTransactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0, 'no insertId 2');
+      assert.equal(res.rowsAffected, 0, 'rowsAffected');
+      assert.equal(res.rows.length, 1, 'rows.length');
+      assert.deepEqual(res.rows.item(0), {
+        text1: 'toto',
+        text2: 'haha'
+      });
+    });
+  });
+
+  it('throws error for writes during read-only transaction', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("quux", "haha")';
+      return expectError(readTransactionPromise(db, sql));
+    });
+  });
+
+  it('query ignored for invalid read-only transaction write', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("quux", "haha")';
+      return expectError(readTransactionPromise(db, sql));
+    }).then(function () {
+      var sql = 'SELECT * from table1';
+      return readTransactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0, 'no insertId 2');
+      assert.equal(res.rowsAffected, 0, 'rowsAffected');
+      assert.equal(res.rows.length, 1, 'rows.length');
+      assert.deepEqual(res.rows.item(0), {
+        text1: 'toto',
+        text2: 'haha'
+      });
+    });
+  });
+
 });
 
 
@@ -678,7 +748,7 @@ describe('dedicated db test suite - actual DB', function () {
       assert.equal(getInsertId(res), void 0, 'no insertId');
       assert.equal(res.rowsAffected, 0, 'rowsAffected');
       assert.equal(res.rows.length, 1, 'rows.length');
-      assert.deepEqual(res.rows[0], {
+      assert.deepEqual(res.rows.item(0), {
         text1: 'foo',
         text2: 'bar'
       });
@@ -688,7 +758,7 @@ describe('dedicated db test suite - actual DB', function () {
       assert.equal(getInsertId(res), void 0, 'no insertId');
       assert.equal(res.rowsAffected, 0, 'rowsAffected');
       assert.equal(res.rows.length, 1, 'rows.length');
-      assert.deepEqual(res.rows[0], {
+      assert.deepEqual(res.rows.item(0), {
         text1: 'foo',
         text2: 'bar'
       });

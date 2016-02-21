@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - "stable"
+script: npm run $COMMAND
+before_script:
+  - "npm run lint"
+env:
+  matrix:
+  - COMMAND=test
+  - COMMAND=test-phantom
+branches:
+  only:
+  - master
