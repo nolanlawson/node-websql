@@ -1,14 +1,16 @@
 {
   "name": "websql",
   "version": "0.1.0",
-  "description": "WebSQL API for Node.js",
+  "description": "WebSQL Database API, implemented for Node using sqlite3",
   "main": "lib/index.js",
   "keywords": [
     "websql",
     "sql",
     "opendatabase",
     "sqlite",
-    "storage"
+    "storage",
+    "sqlite3",
+    "database"
   ],
   "scripts": {
     "test": "mocha test/test.js",
