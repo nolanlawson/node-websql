@@ -69,7 +69,7 @@ Non-Goals
 
 This library is _not_ designed to:
 
-- Invent new APIs, e.g. deleting databases, supporting `BLOB`s, encrypt, etc.
+- Invent new APIs, e.g. deleting databases, supporting `BLOB`s, encryption, etc.
 - Support WebSQL in Firefox, IE, or other non-WebSQL browsers
 
 In other words, the goal is not to carry the torch of WebSQL,
