@@ -1,4 +1,4 @@
-node-websql [![Build Status](https://travis-ci.org/nolanlawson/node-websql.svg?branch=master)](https://travis-ci.org/nolanlawson/node-websql) [![Coverage Status](https://coveralls.io/repos/github/nolanlawson/node-websql/badge.svg?branch=master)](https://coveralls.io/github/nolanlawson/node-websql?branch=master)
+node-websql [![Build Status](https://travis-ci.org/nolanlawson/node-websql.svg?branch=master)](https://travis-ci.org/nolanlawson/node-websql) [![Coverage Status](https://coveralls.io/repos/github/nolanlawson/node-websql/badge.svg?branch=master)](https://coveralls.io/github/nolanlawson/node-websql?branch=master&nonce=foo)
 ====
 
 The [Web SQL Database API][websql], implemented for Node
@@ -40,7 +40,7 @@ The `version` is the database version (_currently ignored - see below_).
 The `description` and `size` attributes are ignored, but they are required for
 compatibility with the WebSQL API.
 
-The `callback` just returns the same database object returned 
+The `callback` just returns the same database object returned
 synchronously (_migrations currently aren't supported - see below_).
 
 For more information how to use the WebSQL API, see [the spec][websql] or
@@ -78,8 +78,8 @@ but rather to bridge the gap from existing WebSQL-based code to Node.js.
 TODOs
 ---
 
-The versioning and migration APIs 
-(i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion)) 
+The versioning and migration APIs
+(i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion))
 are not supported. Pull requests welcome!
 
 Testing
@@ -104,7 +104,7 @@ Test in debug mode (e.g. with the `node-inspector`):
 Run the test suite against actual WebSQL in a browser:
 
     npm run test-local
-    
+
 Run the actual-WebSQL test against PhantomJS:
 
     npm run test-phantom
