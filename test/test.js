@@ -541,22 +541,26 @@ describe('dedicated db test suite', function () {
   });
 
 
-  it.skip('stores data', function () {
-    var db1 = openDatabase(':memory:', '1.0', 'yolo', 100000);
-    var db2 = openDatabase(':memory:', '1.0', 'yolo', 100000);
+  it('stores data', function () {
+    var db1 = openDatabase('testdb', '1.0', 'yolo', 100000);
+    var db2 = openDatabase('testdb', '1.0', 'yolo', 100000);
 
     var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
-    return transactionPromise(db1, sql).then(function (res) {
-      assert.equal(getInsertId(res), 0, 'insertId');
-      assert.equal(res.rowsAffected, 0, 'rowsAffected');
-      assert.equal(res.rows.length, 0, 'rows.length');
+    return transactionPromise(db1, sql).then(function () {
     }).then(function () {
       var sql = 'INSERT INTO table1 VALUES ("foo", "bar")';
       return transactionPromise(db1, sql);
+    }).then(function () {
+      var sql = 'SELECT * from table1';
+      return transactionPromise(db1, sql);
     }).then(function (res) {
-      assert.equal(getInsertId(res), 1, 'insertId');
-      assert.equal(res.rowsAffected, 1, 'rowsAffected');
-      assert.equal(res.rows.length, 0, 'rows.length');
+      assert.equal(getInsertId(res), void 0, 'no insertId');
+      assert.equal(res.rowsAffected, 0, 'rowsAffected');
+      assert.equal(res.rows.length, 1, 'rows.length');
+      assert.deepEqual(res.rows[0], {
+        text1: 'foo',
+        text2: 'bar'
+      });
     });
   });
 
