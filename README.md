@@ -79,7 +79,7 @@ TODOs
 ---
 
 The versioning and migration APIs 
-(i.e. [changeVersion()](https://www.w3.org/TR/webdatabase/#dom-database-changeversion) 
+(i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion)) 
 are not supported. Pull requests welcome!
 
 [websql]: https://www.w3.org/TR/webdatabase/
