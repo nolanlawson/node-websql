@@ -71,7 +71,6 @@ describe('basic test suite', function () {
         txn.executeSql('SELECT foo FROM yolo', [], function (txn, result) {
           resolve(result);
         }, function (txn, err) {
-          console.log('rejecting with', err);
           reject(err);
         });
       });
@@ -191,9 +190,82 @@ describe('basic test suite', function () {
             });
           });
         });
-      }, resolve, reject);
+      }, function (err) {
+        if (!err) {
+          return reject(new Error('expected an error here'));
+        }
+        resolve();
+      }, reject);
+    }).then(function () {
+      assert.equal(called, 3);
     });
   });
+
+  it('recovers from errors', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called++;
+            txn.executeSql('SELECT yolo from baz', [], function () {
+              called++;
+            }, function (err) {
+              if (!err) {
+                return reject(new Error('expected an error here'));
+              }
+              return false; // ack that the error was handled
+            });
+          });
+        });
+      }, reject, resolve);
+    }).then(function () {
+      assert.equal(called, 3);
+    });
+  });
+
+  it('doesn\'t recover if you return true', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+        });
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called++;
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called++;
+            txn.executeSql('SELECT yolo from baz', [], function () {
+              called++;
+            }, function (err) {
+              if (!err) {
+                return reject(new Error('expected an error here'));
+              }
+              return true;
+            });
+          });
+        });
+      }, function (err) {
+        if (!err) {
+          return reject(new Error('expected an error here'));
+        }
+        resolve();
+      }, reject);
+    }).then(function () {
+      assert.equal(called, 3);
+    });
+  });
+
 });
 
 describe('dedicated db test suite', function () {
