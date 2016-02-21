@@ -353,10 +353,14 @@ describe('basic test suite', function () {
     });
   });
 
+  it('has a version', function () {
+    var db = openDatabase('testdb', '1.0', 'yolo', 100000);
+    assert.equal(db.version, '1.0');
+  });
+
 });
 
 describe('dedicated db test suite', function () {
-
   this.timeout(10000);
 
 });
