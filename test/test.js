@@ -540,6 +540,101 @@ describe('dedicated db test suite - in-memory', function () {
     });
   });
 
+  it('returns correct rowsAffected/insertId - delete', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function (res) {
+    }).then(function () {
+      var sql = 'DELETE FROM table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 0);
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'DELETE FROM table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 1);
+      assert.equal(res.rows.length, 0);
+    });
+  });
+
+  it('returns correct rowsAffected/insertId - delete 2', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function (res) {
+    }).then(function () {
+      var sql = 'DELETE FROM table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 0);
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("baz", "bar")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'DELETE FROM table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 2);
+      assert.equal(res.rows.length, 0);
+    });
+  });
+
+  it('returns correct rowsAffected/insertId - drop 1', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'DROP TABLE table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 0);
+    });
+  });
+
+  it('returns correct rowsAffected/insertId - drop 2', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'DROP TABLE table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 0);
+    });
+  });
+
+  it('returns correct rowsAffected/insertId - drop 3', function () {
+    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+    return transactionPromise(db, sql).then(function () {
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("toto", "haha")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'INSERT INTO table1 VALUES ("baz", "bar")';
+      return transactionPromise(db, sql);
+    }).then(function () {
+      var sql = 'DROP TABLE table1';
+      return transactionPromise(db, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0);
+      assert.equal(res.rowsAffected, 0);
+      assert.equal(res.rows.length, 0);
+    });
+  });
+
 });
 
 
