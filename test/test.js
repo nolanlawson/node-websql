@@ -381,7 +381,7 @@ function getInsertId(res) {
   }
 }
 
-describe('dedicated db test suite', function () {
+describe('dedicated db test suite - in-memory', function () {
   this.timeout(30000);
 
   var db;
@@ -540,19 +540,55 @@ describe('dedicated db test suite', function () {
     });
   });
 
+});
 
-  it('stores data', function () {
+
+describe('dedicated db test suite - actual DB', function () {
+
+  this.timeout(30000);
+
+  var db;
+
+  beforeEach(function () {
+    db = openDatabase('testdb', '1.0', 'yolo', 100000);
+  });
+
+  afterEach(function () {
+    return new Promise(function (resolve, reject) {
+      db.transaction(function (txn) {
+        txn.executeSql('DROP TABLE IF EXISTS table1');
+        txn.executeSql('DROP TABLE IF EXISTS table2');
+        txn.executeSql('DROP TABLE IF EXISTS table3');
+      }, reject, resolve);
+    }).then(function () {
+      db = null;
+    });
+  });
+
+
+  it('stores data between two DBs', function () {
     var db1 = openDatabase('testdb', '1.0', 'yolo', 100000);
     var db2 = openDatabase('testdb', '1.0', 'yolo', 100000);
 
-    var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
-    return transactionPromise(db1, sql).then(function () {
+    return Promise.resolve().then(function () {
+      var sql = 'CREATE TABLE table1 (text1 string, text2 string)';
+      return transactionPromise(db1, sql);
     }).then(function () {
       var sql = 'INSERT INTO table1 VALUES ("foo", "bar")';
       return transactionPromise(db1, sql);
     }).then(function () {
-      var sql = 'SELECT * from table1';
+      var sql = 'SELECT * from table1;';
       return transactionPromise(db1, sql);
+    }).then(function (res) {
+      assert.equal(getInsertId(res), void 0, 'no insertId');
+      assert.equal(res.rowsAffected, 0, 'rowsAffected');
+      assert.equal(res.rows.length, 1, 'rows.length');
+      assert.deepEqual(res.rows[0], {
+        text1: 'foo',
+        text2: 'bar'
+      });
+      var sql = 'SELECT * from table1;';
+      return transactionPromise(db2, sql);
     }).then(function (res) {
       assert.equal(getInsertId(res), void 0, 'no insertId');
       assert.equal(res.rowsAffected, 0, 'rowsAffected');
