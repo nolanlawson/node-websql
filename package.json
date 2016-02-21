@@ -2,6 +2,13 @@
   "name": "websql",
   "version": "0.1.0",
   "description": "WebSQL Database API, implemented for Node using sqlite3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nolanlawson/node-websql.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nolanlawson/node-websql/issues"
+  },
   "main": "lib/index.js",
   "keywords": [
     "websql",
@@ -35,5 +42,6 @@
     "mocha": "^2.4.5",
     "phantomjs": "^2.1.3",
     "zuul": "^3.9.0"
-  }
+  },
+  "files": ["lib"]
 }
