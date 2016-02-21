@@ -25,7 +25,7 @@ function expectError(promise) {
 
 describe('basic test suite', function () {
 
-  this.timeout(2000);
+  this.timeout(60000);
 
   it('throw error for openDatabase args < 1', function () {
     return expectError(Promise.resolve().then(function () {
@@ -171,6 +171,31 @@ describe('basic test suite', function () {
     }).then(function () {
       assert.equal(called, 4);
     });
+  });
+
+  it('calls transaction complete callback - empty txn', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db.transaction(function () {
+      }, reject, resolve);
+    }).then(function () {
+      assert.equal(called, 0);
+    });
+  });
+
+  it('calls transaction complete callback - null txn', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+
+    return expectError(new Promise(function (resolve, reject) {
+      try {
+        db.transaction(null, reject, resolve);
+      } catch (err) {
+        reject(err);
+      }
+    }));
   });
 
   it('calls transaction error callback', function () {
@@ -397,7 +422,7 @@ function getInsertId(res) {
 }
 
 describe('dedicated db test suite - in-memory', function () {
-  this.timeout(30000);
+  this.timeout(60000);
 
   var db;
 
@@ -710,7 +735,7 @@ describe('dedicated db test suite - in-memory', function () {
 
 describe('dedicated db test suite - actual DB', function () {
 
-  this.timeout(30000);
+  this.timeout(60000);
 
   var db;
 
