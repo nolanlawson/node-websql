@@ -1,7 +1,7 @@
 node-websql [![Build Status](https://travis-ci.org/nolanlawson/node-websql.svg?branch=master)](https://travis-ci.org/nolanlawson/node-websql) [![Coverage Status](https://coveralls.io/repos/github/nolanlawson/node-websql/badge.svg?branch=master&nonce=foo)](https://coveralls.io/github/nolanlawson/node-websql?branch=master)
 ====
 
-The [Web SQL Database API][websql], implemented for Node
+The [WebSQL Database API][websql], implemented for Node
 using [sqlite3](https://github.com/mapbox/node-sqlite3).
 
 Install
@@ -51,7 +51,7 @@ For more information on `sqlite3`, see [the SQLite3 readme](sqlite3).
 Goals
 ----
 
-The [Web SQL Database API][websql] is a deprecated
+The [WebSQL Database API][websql] is a deprecated
 standard, but in many cases it's useful to reuse legacy code
 designed for browsers that support WebSQL. Also, it allows you to quickly
 test WebSQL-based code in Node, which can be convenient.
