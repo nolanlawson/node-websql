@@ -48,6 +48,19 @@ For more information how to use the WebSQL API, see [the spec][websql] or
 
 For more information on `sqlite3`, see [the SQLite3 readme](sqlite3).
 
+### Custom sqlite3 implementation
+
+If you'd like to use your own `sqlite3` implementation, just do:
+
+```js
+var customOpenDatabase = require('websql/custom');
+var openDatabase = customOpenDatabase(mySqlite3);
+```
+
+Your responsibility as a developer is to implement the subset of the
+`sqlite3` API which this module uses. At this time, that means the `db.all()`
+and `db.run()` methods. See the [sqlite3 docs](https://github.com/mapbox/node-sqlite3) for more info.
+
 Goals
 ----
 
