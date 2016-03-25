@@ -51,6 +51,7 @@
     "zuul": "^3.9.0"
   },
   "files": [
-    "lib"
+    "lib",
+    "custom"
   ]
 }
