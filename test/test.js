@@ -49,6 +49,13 @@ describe('basic test suite', function () {
     }));
   });
 
+  it('returns the browsers native openDatabase', function() {
+    global.openDatabase = 'some-mock';
+    var browser = require('../lib/browser');
+    delete global.openDatabase;
+    assert.equal(browser, 'some-mock');
+  });
+
   it('does a basic database operation', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return new Promise(function (resolve, reject) {
@@ -199,7 +206,7 @@ describe('basic test suite', function () {
       assert.equal(results[1].rows.item(0)['2 + 1'], 3);
     });
   });
-  
+
   it('calls transaction complete callback', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
 
