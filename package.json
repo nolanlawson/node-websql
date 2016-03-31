@@ -10,6 +10,7 @@
     "url": "https://github.com/nolanlawson/node-websql/issues"
   },
   "main": "lib/index.js",
+  "browser": "lib/browser.js",
   "keywords": [
     "websql",
     "sql",
