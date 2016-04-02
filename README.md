@@ -61,6 +61,12 @@ Your responsibility as a developer is to implement the subset of the
 `sqlite3` API which this module uses. At this time, that means the `db.all()`
 and `db.run()` methods. See the [sqlite3 docs](https://github.com/mapbox/node-sqlite3) for more info.
 
+### In the browser
+
+You can also use this module in the browser (via Browserify/Webpack/etc.),
+in which case it will just use
+`window.openDatabase`, meaning you are subject to [browser WebSQL support](http://caniuse.com/#feat=sql-storage).
+
 Goals
 ----
 

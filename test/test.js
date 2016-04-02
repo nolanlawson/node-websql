@@ -5,15 +5,7 @@ Promise.longStackTraces();
 var assert = require('assert');
 
 /*jshint -W079 */
-var openDatabase;
-
-if (!process.browser) {
-  /*jshint -W020 */
-  openDatabase = require('../'); // Node
-} else {
-  /*jshint -W020 */
-  openDatabase = window.openDatabase.bind(window);
-}
+var openDatabase = require('../');
 
 function expectError(promise) {
   return promise.then(function () {
@@ -47,13 +39,6 @@ describe('basic test suite', function () {
     return expectError(Promise.resolve().then(function () {
       openDatabase(':memory:', 'yolo', 'hey');
     }));
-  });
-
-  it('returns the browsers native openDatabase', function() {
-    global.openDatabase = 'some-mock';
-    var browser = require('../lib/browser');
-    delete global.openDatabase;
-    assert.equal(browser, 'some-mock');
   });
 
   it('does a basic database operation', function () {
