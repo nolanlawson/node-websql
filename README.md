@@ -48,18 +48,6 @@ For more information how to use the WebSQL API, see [the spec][websql] or
 
 For more information on `sqlite3`, see [the SQLite3 readme](sqlite3).
 
-### Custom sqlite3 implementation
-
-If you'd like to use your own `sqlite3` implementation, just do:
-
-```js
-var customOpenDatabase = require('websql/custom');
-var openDatabase = customOpenDatabase(mySqlite3);
-```
-
-Your responsibility as a developer is to implement the subset of the
-`sqlite3` API which this module uses. At this time, that means the `db.all()`
-and `db.run()` methods. See the [sqlite3 docs](https://github.com/mapbox/node-sqlite3) for more info.
 
 ### In the browser
 
@@ -93,6 +81,118 @@ This library is _not_ designed to:
 
 In other words, the goal is not to carry the torch of WebSQL,
 but rather to bridge the gap from existing WebSQL-based code to Node.js.
+
+Custom SQLite3 bindings
+----
+
+This library is designed to allow swappable SQLite3 implementations, beyond
+just [node-sqlite3](https://github.com/mapbox/node-sqlite3). To use a custom
+implementation, use this API:
+
+```js
+var customOpenDatabase = require('websql/custom');
+var openDatabase = customOpenDatabase(SQLiteDatabase);
+```
+
+This `SQLiteDatabase` implementation needs to be a constructor-style function
+with a constructor signature like so:
+
+```js
+// takes a single argument: the database name
+var db = new SQLiteDatabase('dbname');
+```
+
+Then it implements a single function, `exec()`, like so:
+
+```js
+function exec(queries, readOnly, callback) {
+  // queries: an array of SQL statements and queries, with a key "sql" and "args"
+  // readOnly: whether or not these queries are in "read only" mode
+  // callback: callback to be called with results (first arg is error, second arg is results)
+}
+```
+
+Here is the full specification:
+
+### SQLiteDatabase(name (String))
+
+Construct a new `SQLiteDatbase` object, with the given string name.
+
+### exec(queries (Array<SQLQuery>), readOnly (boolean), callback (function))
+
+Execute the list of `SQLQuery`s. If we are in `readOnly` mode, then any
+non-`SELECT` queries need to throw an error without executing. This function calls the Node-style
+callback with an error as the first argument or the `Array<SQLResult>` as
+the second argument.
+
+### SQLQuery
+
+A SQL query and bindings to execute. This can be a plain JavaScript object or a custom class,
+as long as it has the following members:
+
+#### sql (String)
+
+The SQL query to execute.
+
+#### args (Array<String>)
+
+The arguments to bind the query.
+
+E.g.:
+
+```js
+{
+  sql: 'INSERT INTO foo values (?, ?)',
+  args: ['bar', 'baz']
+}
+```
+
+### SQLResult
+
+A result returned by a SQL query. This can be a plain JavaScript object or a custom class,
+as long as it has the following members:
+
+#### error
+
+A JavaScript `Error` object, or `undefined` if the `SQLQuery` did not throw an error. If `error` is truthy, then it's assumed `insertId`, `rowsAffected`, and `rows` are falsy (they will be ignored anyway).
+
+#### insertId (number)
+
+An insertion ID representing the new row number, or `undefined` if nothing was inserted.
+
+#### rowsAffected (number)
+
+The number of rows affected by the query, or 0 if none.
+
+#### rows (Array<object>)
+
+The rows returned by a `SELECT` query, or empty if none.
+
+Each object is a mapping of keys (columns) to values (value fetched).
+
+E.g.:
+
+```js
+{
+  insertId: undefined,
+  rowsAffected: 0,
+  rows: [
+    {'foo': 'bar'},
+    {'foo': 'baz'},
+  ]
+}
+```
+
+Or:
+
+```js
+{
+  error: new Error('whoopsie')
+}
+```
+
+For an example implementation (and the one used by this module)
+see `lib/sqlite/SQLiteDatabase.js`.
 
 TODOs
 ---
