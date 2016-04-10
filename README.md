@@ -164,7 +164,7 @@ An insertion ID representing the new row number, or `undefined` if nothing was i
 
 The number of rows affected by the query, or 0 if none.
 
-#### rows (Array<object>)
+#### rows (Array&lt;object&gt;)
 
 The rows returned by a `SELECT` query, or empty if none.
 
