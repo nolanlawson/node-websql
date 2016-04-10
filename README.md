@@ -48,6 +48,11 @@ For more information how to use the WebSQL API, see [the spec][websql] or
 
 For more information on `sqlite3`, see [the SQLite3 readme](sqlite3).
 
+### transaction() vs readTransaction()
+
+Both `readTransaction()` (read-only) and `transaction()` (read-write) are supported.
+`readTransaction()` has some small performance optimizations, so it's worthwhile to
+use if you're not writing any data in a transaction.
 
 ### In the browser
 
