@@ -48,17 +48,17 @@ For more information how to use the WebSQL API, see [the spec][websql] or
 
 For more information on `sqlite3`, see [the SQLite3 readme](sqlite3).
 
-### transaction() vs readTransaction()
-
-Both `readTransaction()` (read-only) and `transaction()` (read-write) are supported.
-`readTransaction()` has some small performance optimizations, so it's worthwhile to
-use if you're not writing any data in a transaction.
-
 ### In the browser
 
 You can also use this module in the browser (via Browserify/Webpack/etc.),
 in which case it will just use
 `window.openDatabase`, meaning you are subject to [browser WebSQL support](http://caniuse.com/#feat=sql-storage).
+
+### readTransaction() vs transaction()
+
+Both `readTransaction()` (read-only) and `transaction()` (read-write) are supported.
+`readTransaction()` has some small performance optimizations, so it's worthwhile to
+use if you're not writing any data in a transaction.
 
 Goals
 ----
