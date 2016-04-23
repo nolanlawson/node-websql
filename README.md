@@ -2,7 +2,7 @@ node-websql [![Build Status](https://travis-ci.org/nolanlawson/node-websql.svg?b
 ====
 
 The [WebSQL Database API][websql], implemented for Node
-using [sqlite3](https://github.com/mapbox/node-sqlite3).
+using [sqlite3](https://github.com/mapbox/node-sqlite3). In the browser, it falls back to `window.openDatabase`.
 
 Install
 ----
