@@ -70,6 +70,7 @@
     "rimraf": "2.5.2",
     "scope-eval": "0.0.3",
     "spark-md5": "2.0.2",
+    "sublevel-pouchdb": "1.0.0",
     "vuvuzela": "1.0.3",
     "zuul": "3.10.1"
   },
