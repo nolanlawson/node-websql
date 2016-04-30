@@ -1935,4 +1935,20 @@ describe('advanced test suite - actual DB', function () {
     });
   });
 
+  it('callback order 3', function () {
+    var called = [];
+    return new Promise(function (resolve) {
+      called.push('a');
+      var db2 = openDatabase('testdbs/testdb-' + Math.random(),
+        '1.0', 'yolo', 1, function (db3) {
+        called.push('b');
+        resolve([db2, db3]);
+      });
+      called.push('c');
+    }).then(function (dbs) {
+      assert(dbs[0] === dbs[1]);
+      assert.deepEqual(called, ['a', 'c', 'b']);
+    });
+  });
+
 });
