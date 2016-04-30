@@ -1722,4 +1722,217 @@ describe('advanced test suite - actual DB', function () {
     });
   });
 
+  it('callback order 1', function () {
+    var called = [];
+    return new Promise(function (resolve, reject) {
+      var numTransactions = 2;
+      var rejected;
+      function done() {
+        if (rejected) {
+          return reject();
+        }
+        resolve();
+      }
+      function resolveOne() {
+        if (!--numTransactions) {
+          done();
+        }
+      }
+      function rejectOne() {
+        rejected = true;
+        if (!--numTransactions) {
+          done();
+        }
+      }
+
+      called.push('a');
+      db.transaction(function (txn) {
+        called.push('b');
+        txn.executeSql('CREATE TABLE table1 (foo text)', [], function () {
+          called.push('c');
+          txn.executeSql('DROP TABLE table1;', [], function () {
+            called.push('d');
+          });
+          called.push('e');
+          txn.executeSql('CREATE TABLE table1 (foo text);', [], function () {
+            called.push('f');
+          });
+          called.push('g');
+          txn.executeSql('INSERT INTO table1 VALUES ("x")', [], function () {
+            called.push('h');
+          });
+          called.push('i');
+        });
+        called.push('j');
+        txn.executeSql('INSERT INTO table1 VALUES ("y")', [], function () {
+          called.push('k');
+        });
+        called.push('l');
+      }, rejectOne, resolveOne);
+      called.push('m');
+      db.transaction(function (txn) {
+        called.push('n');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('o');
+        });
+        called.push('p');
+      }, rejectOne, resolveOne);
+    }).then(function () {
+      var expected = [
+        "a","m","b","j","l","c","e","g","i","k","d","f","h","n","p","o"
+      ];
+      assert.deepEqual(called, expected);
+    });
+  });
+
+  it('callback order 2', function () {
+    var called = [];
+    return new Promise(function (resolve, reject) {
+      var numTransactions = 7;
+      var rejected;
+      function done() {
+        if (rejected) {
+          return reject();
+        }
+        resolve();
+      }
+      function resolveOne() {
+        if (!--numTransactions) {
+          done();
+        }
+      }
+      function rejectOne() {
+        rejected = true;
+        if (!--numTransactions) {
+          done();
+        }
+      }
+
+      called.push('a');
+      db.readTransaction(function (txn) {
+        called.push('b');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('c');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('d');
+          });
+          called.push('e');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('f');
+          });
+          called.push('g');
+        });
+        called.push('j');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('k');
+        });
+        called.push('l');
+      }, rejectOne, resolveOne);
+      called.push('m');
+      db.transaction(function (txn) {
+        called.push('n');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('o');
+        });
+        called.push('p');
+      }, rejectOne, resolveOne);
+      called.push('1');
+      db.readTransaction(function (txn) {
+        called.push('2');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('3');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('4');
+          });
+          called.push('5');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('6');
+          });
+          called.push('7');
+        });
+        called.push('8');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('9');
+        });
+        called.push('10');
+      }, rejectOne, resolveOne);
+      called.push('11');
+      db.readTransaction(function (txn) {
+        called.push('alpha');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('beta');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('gamma');
+          });
+          called.push('delta');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('epsilon');
+          });
+          called.push('zeta');
+        });
+        called.push('eta');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('theta');
+        });
+        called.push('iota');
+      }, rejectOne, resolveOne);
+      called.push('ichi');
+      db.readTransaction(function (txn) {
+        called.push('ni');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('san');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('shi');
+          });
+          called.push('go');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('roku');
+          });
+          called.push('shichi');
+        });
+        called.push('hachi');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('kyuu');
+        });
+        called.push('juu');
+      }, rejectOne, resolveOne);
+      called.push('un');
+      db.readTransaction(function (txn) {
+        called.push('deux');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('trois');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('quatre');
+          });
+          called.push('cinq');
+          txn.executeSql('SELECT 1 + 1', [], function () {
+            called.push('six');
+          });
+          called.push('sept');
+        });
+        called.push('huit');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('neuf');
+        });
+        called.push('dix');
+      }, rejectOne, resolveOne);
+      called.push('onze');
+      db.transaction(function (txn) {
+        called.push('12');
+        txn.executeSql('SELECT 1 + 1', [], function () {
+          called.push('13');
+        });
+        called.push('14');
+      }, rejectOne, resolveOne);
+    }).then(function () {
+      var expected = ["a", "m", "1", "11", "ichi", "un", "onze", "b", "j",
+        "l", "c", "e", "g", "k", "d", "f", "n", "p", "o", "2", "8", "10",
+        "3", "5", "7", "9", "4", "6", "alpha", "eta", "iota", "beta",
+        "delta", "zeta", "theta", "gamma", "epsilon", "ni", "hachi", "juu",
+        "san", "go", "shichi", "kyuu", "shi", "roku", "deux", "huit", "dix",
+        "trois", "cinq", "sept", "neuf", "quatre", "six", "12", "14", "13"];
+      assert.deepEqual(called, expected);
+    });
+  });
+
 });
