@@ -30,7 +30,7 @@
     "database"
   ],
   "scripts": {
-    "test": "bash bin/test.sh",
+    "test": "mocha test/test.js",
     "lint": "jshint -c .jshintrc lib test",
     "test-debug": "mocha --debug-brk test/test.js",
     "test-local": "zuul --no-coverage --local 9000 --ui mocha-bdd test/test.js",
