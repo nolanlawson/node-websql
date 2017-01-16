@@ -210,6 +210,27 @@ The versioning and migration APIs
 (i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion))
 are not supported. Pull requests welcome!
 
+Limitations
+----
+
+1. With the restrictions of the [node-sqlite3 API](https://github.com/mapbox/node-sqlite3/wiki/API)
+on database names ("Valid values are filenames, ":memory:" for an anonymous
+in-memory database and an empty string for an anonymous disk-based
+database") and our lack of interest to enforce a particular mapping that
+honors the [WebSQL spec](https://www.w3.org/TR/webdatabase/#dom-opendatabase)
+in its indicating that "All strings including the empty string are valid database
+names" (and that they are case-sensitive), consumers will need to do their
+own mapping for strings in order to 1) avoid problems with invalid filenames or
+filenames on case insensitive file systems, and to 2) avoid user databases being
+given special treatment if the empty string or the string ":memory:" is used.
+
+2. Although neither the WebSQL spec nor SQLite speaks to this matter,
+`node-sqlite3` has the following additional
+[limitations](https://github.com/mapbox/node-sqlite3/wiki/API#databaseexecsql-callback)
+which are surfaced for our users: namely, that statements will only be
+executed up to the first NULL byte and [SQL comments](https://sqlite.org/lang_comment.html)
+will lead to runtime errors.
+
 Testing
 ----
 
