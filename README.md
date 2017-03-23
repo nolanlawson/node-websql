@@ -95,6 +95,7 @@ just [node-sqlite3](https://github.com/mapbox/node-sqlite3). Examples:
 
 * [node-websql itself](https://github.com/nolanlawson/node-websql/blob/7c6327c2bbcf48bb0ac26f8f689206b7227baf81/lib/sqlite/SQLiteDatabase.js)
 * [Cordova SQLite Plugin 2](https://github.com/nolanlawson/cordova-plugin-sqlite-2/blob/6bc32a4e71a3eea28fbc98c4da7e87c56156d094/src/javascript/SQLiteDatabase.js)
+* [React Native SQLite 2](https://github.com/noradaiko/react-native-sqlite-2)
 
 To create your own custom implementation, use this API:
 
