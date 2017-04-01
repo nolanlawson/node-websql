@@ -223,7 +223,10 @@ in its indicating that "All strings including the empty string are valid databas
 names" (and that they are case-sensitive), consumers will need to do their
 own mapping for strings in order to 1) avoid problems with invalid filenames or
 filenames on case insensitive file systems, and to 2) avoid user databases being
-given special treatment if the empty string or the string ":memory:" is used.
+given special treatment if the empty string or the string ":memory:" is used;
+another special purpose form of string supported by SQLite that may call for
+escaping are [`file::memory:...`](https://sqlite.org/inmemorydb.html)
+[URLs](https://sqlite.org/uri.html#uri_format).
 
 2. Although neither the WebSQL spec nor SQLite speaks to this matter,
 `node-sqlite3` has the following additional
