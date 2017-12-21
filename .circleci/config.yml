@@ -22,8 +22,14 @@ jobs:
       # Travis was using Node.js v5.12.0 which CircleCI does have, therefore use closest match
       - image: circleci/node:6.0.0
 
+  build-8.9.3:
+    <<: *common-build
+    docker:
+      - image: circleci/node:8.9.3
+
 workflows:
   version: 2
   build_all:
     jobs:
       - build-6.0.0
+      - build-8.9.3
