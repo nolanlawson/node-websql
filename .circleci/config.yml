@@ -16,6 +16,12 @@ jobs:
 
       - run: npm test
 
+      - run: npm run test-phantom
+
+      - run: npm run coverage
+
+      #- run: npm run report-coverage
+
   build-6.12.2:
     <<: *common-build
     docker:
