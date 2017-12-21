@@ -880,6 +880,7 @@ function preprocessAttachments(docInfos, blobType, callback) {
       if (asBinary.error) {
         return callback(asBinary.error);
       }
+      var asBinaryBuffer = new buffer(att.data, 'base64');
 
       att.length = asBinary.length;
       if (blobType === 'blob') {
@@ -889,7 +890,7 @@ function preprocessAttachments(docInfos, blobType, callback) {
       } else { // binary
         att.data = asBinary;
       }
-      res(asBinary).then(function (result) {
+      res(asBinaryBuffer).then(function (result) {
         att.digest = 'md5-' + result;
         callback();
       });

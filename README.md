@@ -1,4 +1,4 @@
-node-websql [![Build Status](https://travis-ci.org/nolanlawson/node-websql.svg?branch=master)](https://travis-ci.org/nolanlawson/node-websql) [![Coverage Status](https://coveralls.io/repos/github/nolanlawson/node-websql/badge.svg?branch=master&nonce=foo)](https://coveralls.io/github/nolanlawson/node-websql?branch=master)
+node-websql
 ====
 
 The [WebSQL Database API][websql], implemented for Node
