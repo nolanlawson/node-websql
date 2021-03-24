@@ -18,7 +18,8 @@
     "leveldown": false,
     "level": false,
     "rimraf": false,
-    "mkdirp": false
+    "mkdirp": false,
+    "sqlite3": false
   },
   "keywords": [
     "websql",
