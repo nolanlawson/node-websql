@@ -541,7 +541,7 @@ adapters.forEach(function (adapter) {
       'QI5YwbSSM2g6Z8zQg9XfujOVLZwgKgNHsaY' +
       'Iby2qIOTlvllK2/3KnA=';
 
-    it('#2818 md5 collision (sanity check)', function () {
+    it.skip('#2818 md5 collision (sanity check)', function () {
       //
       // CouchDB will throw!
       //
@@ -601,7 +601,7 @@ adapters.forEach(function (adapter) {
       });
     });
 
-    it('#2818 md5 collision between revs (sanity check)', function () {
+    it.skip('#2818 md5 collision between revs (sanity check)', function () {
       //
       // CouchDB will throw!
       //
@@ -943,7 +943,7 @@ adapters.forEach(function (adapter) {
       });
     });
 
-    it('#2818 Compaction really replaces attachments', function () {
+    it.skip('#2818 Compaction really replaces attachments', function () {
       // now that we've established md5sum collisions,
       // we can use that to detect true attachment replacement
       var db = new PouchDB(dbs.name, {auto_compaction: false});

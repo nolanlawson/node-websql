@@ -18,7 +18,8 @@
     "leveldown": false,
     "level": false,
     "rimraf": false,
-    "mkdirp": false
+    "mkdirp": false,
+    "sqlite3": false
   },
   "keywords": [
     "websql",
@@ -33,12 +34,9 @@
     "test": "mocha test/test.js",
     "lint": "jshint -c .jshintrc lib test",
     "test-debug": "mocha --debug-brk test/test.js",
-    "test-local": "zuul --no-coverage --local 9000 --ui mocha-bdd test/test.js",
-    "test-phantom": "zuul --no-coverage --phantom --ui mocha-bdd test/test.js",
     "test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- test/test.js",
     "ensure-coverage": "istanbul check-coverage --lines 100 --function 100 --statements 100 --branches 100",
-    "coverage": "npm run test-coverage && npm run ensure-coverage",
-    "report-coverage": "npm run test-coverage && istanbul-coveralls --no-rm"
+    "coverage": "npm run test-coverage && npm run ensure-coverage"
   },
   "author": "Nolan Lawson <nolan@nolanlawson.com>",
   "license": "Apache-2.0",
@@ -57,7 +55,6 @@
     "denodeify": "1.2.1",
     "double-ended-queue": "2.1.0-0",
     "istanbul": "0.4.3",
-    "istanbul-coveralls": "1.0.3",
     "js-extend": "1.0.1",
     "jshint": "2.8.0",
     "level-write-stream": "1.0.0",
@@ -65,15 +62,14 @@
     "lie": "3.0.2",
     "mkdirp": "0.5.1",
     "mocha": "2.4.5",
-    "phantomjs-prebuilt": "2.1.7",
     "pouchdb-collate": "1.2.0",
     "pouchdb-collections": "^1.0.1",
+    "request": "^2.88.2",
     "rimraf": "2.5.2",
     "scope-eval": "0.0.3",
     "spark-md5": "2.0.2",
     "sublevel-pouchdb": "1.0.0",
-    "vuvuzela": "1.0.3",
-    "zuul": "3.10.1"
+    "vuvuzela": "1.0.3"
   },
   "files": [
     "lib",
