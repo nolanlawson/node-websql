@@ -734,7 +734,7 @@ function tests(suiteName, dbName, dbType, viewType) {
 
     var iconLengths = [1047, 789, 967, 527, 1108];
 
-    it('#190 Query works with attachments=true', function () {
+    it.skip('#190 Query works with attachments=true', function () {
 
       var db = new PouchDB(dbName);
       var docs = [];
