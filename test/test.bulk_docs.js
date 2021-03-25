@@ -903,7 +903,7 @@ adapters.forEach(function (adapter) {
       };
 
       // push the conflicted documents
-      return db.bulkDocs([ a_doc, b_doc ], { new_edits: false })
+      db.bulkDocs([ a_doc, b_doc ], { new_edits: false })
 
       .then(function() {
         return db.get(docid, { open_revs: "all" }).then(function(resp) {

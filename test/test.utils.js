@@ -1,4 +1,3 @@
-/* global PouchDB */
 /* jshint -W079 */
 'use strict';
 
