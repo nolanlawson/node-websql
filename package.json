@@ -44,8 +44,10 @@
     "argsarray": "^0.0.1",
     "immediate": "^3.2.2",
     "noop-fn": "^1.0.0",
-    "sqlite3": "^5.0.2",
     "tiny-queue": "^0.2.1"
+  },
+  "optionalDependencies": {
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "assert": "1.3.0",
