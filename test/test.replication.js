@@ -2867,7 +2867,7 @@ adapters.forEach(function (adapters) {
       };
 
       // push the conflicted documents
-      return remote.bulkDocs([ a_doc, b_doc ], {
+      remote.bulkDocs([ a_doc, b_doc ], {
         new_edits: false
       }).then(function () {
         return remote.get(docid, { open_revs: 'all' }).then(function (revs) {

@@ -5,7 +5,7 @@ require('chai').use(require('chai-as-promised'));
 
 var denodeify = require('denodeify');
 var rimraf = denodeify(require('rimraf'));
-var mkdirp = denodeify(require('mkdirp'));
+var mkdirp = require('mkdirp');
 
 describe('node-websql test suite', function () {
   this.timeout(300000);

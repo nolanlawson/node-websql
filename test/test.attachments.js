@@ -93,7 +93,7 @@ adapters.forEach(function (adapter) {
           data: testUtils.btoa('text1')
         }
       }};
-      return db.put(doc).then(function() {
+      db.put(doc).then(function() {
         done('Should not succeed');
       }).catch(function(err) {
         err.name.should.equal('bad_request');

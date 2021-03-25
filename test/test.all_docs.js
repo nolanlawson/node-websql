@@ -662,7 +662,7 @@ adapters.forEach(function (adapter) {
     });
 
     it('test empty db', function (done) {
-      return new PouchDB(dbs.name).then(function (db) {
+      new PouchDB(dbs.name).then(function (db) {
         return db.allDocs().then(function (res) {
           res.rows.should.have.length(0);
           res.total_rows.should.equal(0);
@@ -672,7 +672,7 @@ adapters.forEach(function (adapter) {
     });
 
     it('test after db close', function (done) {
-      return new PouchDB(dbs.name).then(function (db) {
+      new PouchDB(dbs.name).then(function (db) {
         return db.close().then(function () {
           return db.allDocs().catch(function (err) {
             err.message.should.equal('database is closed');
@@ -687,7 +687,7 @@ adapters.forEach(function (adapter) {
         var db = new PouchDB(dbs.name);
         var id = 'baz\u0000';
         var rev;
-        return db.put({_id: id}).then(function (res) {
+        db.put({_id: id}).then(function (res) {
           rev = res.rev;
         }).then(function () {
             return db.get(id);

@@ -944,7 +944,7 @@ adapters.forEach(function (adapter) {
       };
       PouchDB.plugin(plugin);
       db.initPull();
-      return db.put({foo: 'bar'}, 'anid').then(function () {
+      db.put({foo: 'bar'}, 'anid').then(function () {
         called.should.be.above(0, 'put was called');
         return db.get('anid');
       }).then(function (doc) {
