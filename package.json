@@ -1,6 +1,6 @@
 {
   "name": "websql",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "WebSQL Database API, implemented for Node using sqlite3",
   "repository": {
     "type": "git",
