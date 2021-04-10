@@ -1191,21 +1191,21 @@ describe('advanced test suite - actual DB', function () {
   it('handles errors and callback correctly 6', function () {
     var called = [];
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
       try {
-        db.transaction((txn) => {
+        db.transaction(function (txn) {
           called.push(1);
-          txn.executeSql("SELECT 1", [], (txn, result) => {
+          txn.executeSql("SELECT 1", [], function () {
             called.push(2);
             throw new Error("boom");
-          }, (txn, error) => {
+          }, function () {
             called.push(3);
             return true;
           });
-        }, error => {
+        }, function () {
           called.push(4);
           resolve(true);
-        }, () => {
+        }, function () {
           called.push(5);
         });
       } catch (error) {
