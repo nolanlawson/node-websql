@@ -438,15 +438,17 @@ describe('basic test suite', function () {
       db._db.exec(
         [{ sql: 'PRAGMA foreign_keys = ON', args: []}],
         false,
-        function (_err, _result) {
+        function () {
           db.transaction(function (txn) {
             txn.executeSql('CREATE TABLE foo (id integer primary key)', [], function () {
               called++;
               txn.executeSql('INSERT INTO foo (id) VALUES (1)', [], function () {
                 called++;
-                txn.executeSql('CREATE TABLE qux (foo integer NOT NULL REFERENCES foo (id) DEFERRABLE INITIALLY DEFERRED)', [], function () {
+		            var sql = 'CREATE TABLE qux (foo integer NOT NULL REFERENCES ' +
+	                'foo (id) DEFERRABLE INITIALLY DEFERRED)';
+                txn.executeSql(sql, [], function () {
                   called++;
-                  txn.executeSql('INSERT INTO qux (foo) VALUES (2)', [], function (result) {
+                  txn.executeSql('INSERT INTO qux (foo) VALUES (2)', [], function () {
                     called++;
                   });
                 });
