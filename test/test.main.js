@@ -429,6 +429,39 @@ describe('basic test suite', function () {
     assert.equal(db.version, '1.0');
   });
 
+  it('calls error callback when COMMIT throws an exception', function () {
+    var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
+
+    var called = 0;
+
+    return new Promise(function (resolve, reject) {
+      db._db.exec(
+        [{ sql: 'PRAGMA foreign_keys = ON', args: []}],
+        false,
+        function (_err, _result) {
+          db.transaction(function (txn) {
+            txn.executeSql('CREATE TABLE foo (id integer primary key)', [], function () {
+              called++;
+              txn.executeSql('INSERT INTO foo (id) VALUES (1)', [], function () {
+                called++;
+                txn.executeSql('CREATE TABLE qux (foo integer NOT NULL REFERENCES foo (id) DEFERRABLE INITIALLY DEFERRED)', [], function () {
+                  called++;
+                  txn.executeSql('INSERT INTO qux (foo) VALUES (2)', [], function (result) {
+                    called++;
+                  });
+                });
+              });
+            });
+          }, function (err) {
+            assert.equal(called, 4);
+            assert.equal(err.message, "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed");
+            resolve();
+          }, reject);
+        }
+      );
+    });
+  });
+
 });
 
 function transactionPromise(db, sql, sqlArgs) {
