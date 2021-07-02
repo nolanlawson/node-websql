@@ -2014,4 +2014,38 @@ describe('advanced test suite - actual DB', function () {
     });
   });
 
+  it('Allows microtasks to execute without closing transaction', function () {
+    return new Promise(function (overallResolve, overallReject) {
+      var transactionClosedEarly = true;
+
+      Promise.resolve().then(function () {
+        return new Promise(function (resolve) {
+          db.transaction(resolve, overallReject, function () {
+            if (transactionClosedEarly) {
+              overallReject(new Error('transaction closed early'));
+            } else {
+              overallResolve();
+            }
+          });
+        });
+      }).then(function (txn) {
+        return new Promise(function (resolve) {
+          txn.executeSql('CREATE TABLE foo (bar text);', [], resolve);
+        }).then(function () {
+          return new Promise(function (resolve) {
+            txn.executeSql('INSERT INTO foo VALUES ("baz")', [], resolve)
+          });
+        }).then(function () {
+          return new Promise(function (resolve) {
+            txn.executeSql('SELECT * FROM foo', [], function (txn, res) {
+              resolve(res);
+            });
+          });
+        }).then(function (res) {
+          assert.equal(res.rows.length, 1);
+          transactionClosedEarly = false;
+        });
+      });
+    });
+  });
 });
