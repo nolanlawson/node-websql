@@ -444,21 +444,35 @@ describe('basic test suite', function () {
               called++;
               txn.executeSql('INSERT INTO foo (id) VALUES (1)', [], function () {
                 called++;
-		            var sql = 'CREATE TABLE qux (foo integer NOT NULL REFERENCES ' +
-	                'foo (id) DEFERRABLE INITIALLY DEFERRED)';
+		var sql = 'CREATE TABLE qux (foo integer NOT NULL REFERENCES ' +
+	                  'foo (id) DEFERRABLE INITIALLY DEFERRED)';
                 txn.executeSql(sql, [], function () {
                   called++;
-                  txn.executeSql('INSERT INTO qux (foo) VALUES (2)', [], function () {
-                    called++;
-                  });
                 });
               });
+            });
+          }, reject, function() {
+            assert.equal(called, 3);
+          });
+
+          db.transaction(function (txn) {
+            txn.executeSql('INSERT INTO qux (foo) VALUES (2)', [], function () {
+              called++;
             });
           }, function (err) {
             assert.equal(called, 4);
             assert.equal(err.message, "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed");
-            resolve();
           }, reject);
+
+          db.transaction(function (txn) {
+            txn.executeSql('SELECT * FROM qux', [], function (txn, res) {
+              called++;
+              assert.equal(res.rows.length, 0);
+            });
+          }, reject, function () {
+            assert.equal(called, 5);
+            resolve();
+          });
         }
       );
     });
