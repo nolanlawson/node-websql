@@ -58,6 +58,41 @@ describe('basic test suite', function () {
     });
   });
 
+  it('Sets initial version number', function () {
+    var ver = '1.0';
+    return new Promise(function (resolve) {
+      openDatabase(':memory:', ver, 'yolo', 100000, function (db) {
+        resolve(assert.equal(db.version, ver));
+      });
+    });
+  });
+
+  it('Change version number', function () {
+    var oldver = '1.0';
+    var newver = '2.0';
+    return new Promise(function (resolve, reject) {
+      openDatabase(':memory:', oldver, 'yolo', 100000, function (db) {
+        db.changeVersion(oldver, newver, null, reject, function () {
+          resolve(assert.equal(db.version, newver));
+        });
+      });
+    });
+  });
+
+  it('handles an error - change version number', function () {
+    var oldver = '1.0';
+    var newver = '2.0';
+    return expectError(new Promise(function (resolve, reject) {
+      openDatabase(':memory:', oldver, 'yolo', 100000, function(db) {
+        db.changeVersion(newver, newver, null, function(tx, error) {
+          reject(error);
+        }, function () {
+          resolve();
+        });
+      });
+    }));
+  });
+
   it('handles an error - select', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
