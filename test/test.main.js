@@ -45,9 +45,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
+        txn.executeSql('SELECT 1 + 1', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -67,7 +67,7 @@ describe('basic test suite', function () {
     });
   });
 
-  it('Change version number', function () {
+  it('Change version number without callback', function () {
     var oldver = '1.0';
     var newver = '2.0';
     return new Promise(function (resolve, reject) {
@@ -79,12 +79,39 @@ describe('basic test suite', function () {
     });
   });
 
+  it('Change version number with callback', function () {
+    var oldver = '1.0';
+    var newver = '2.0';
+    return new Promise(function (resolve, reject) {
+      openDatabase(':memory:', oldver, 'yolo', 100000, function (db) {
+        db.changeVersion(oldver, newver, function () {
+          assert.equal(db.version, oldver);
+        }, reject, function () {
+          resolve(assert.equal(db.version, newver));
+        });
+      });
+    });
+  });
+
+  it('handles an error - open database', function () {
+    var oldver = '1.0';
+    var newver = '2.0';
+    openDatabase('testdb', oldver, 'yolo', 100000, function () {
+      try {
+        openDatabase('testdb', newver, 'yolo', 100000);
+      }
+      catch (e) {
+        assert.ok(e);
+      }
+    });
+  });
+
   it('handles an error - change version number', function () {
     var oldver = '1.0';
     var newver = '2.0';
     return expectError(new Promise(function (resolve, reject) {
       openDatabase(':memory:', oldver, 'yolo', 100000, function(db) {
-        db.changeVersion(newver, newver, null, function(tx, error) {
+        db.changeVersion(newver, newver, null, function(_tx, error) {
           reject(error);
         }, function () {
           resolve();
@@ -97,9 +124,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('SELECT foo FROM yolo', [], function (txn, result) {
+        txn.executeSql('SELECT foo FROM yolo', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -110,9 +137,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('DROP TABLE blargy blah', [], function (txn, result) {
+        txn.executeSql('DROP TABLE blargy blah', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -123,9 +150,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('DELETE FROM yolo', [], function (txn, result) {
+        txn.executeSql('DELETE FROM yolo', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -136,9 +163,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('CREATE TABLE blargy blah', [], function (txn, result) {
+        txn.executeSql('CREATE TABLE blargy blah', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -149,9 +176,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return expectError(new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('INSERT INTO blargy blah', [], function (txn, result) {
+        txn.executeSql('INSERT INTO blargy blah', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -162,9 +189,9 @@ describe('basic test suite', function () {
     var db = openDatabase(':memory:', '1.0', 'yolo', 100000);
     return new Promise(function (resolve, reject) {
       db.transaction(function (txn) {
-        txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
+        txn.executeSql('SELECT 1 + 1', [], function (_txn, result) {
           resolve(result);
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
       });
@@ -175,9 +202,9 @@ describe('basic test suite', function () {
 
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT 2 + 1', [], function (txn, result) {
+          txn.executeSql('SELECT 2 + 1', [], function (_txn, result) {
             resolve(result);
-          }, function (txn, err) {
+          }, function (_txn, err) {
             reject(err);
           });
         });
@@ -201,17 +228,17 @@ describe('basic test suite', function () {
           }
         }
 
-        txn.executeSql('SELECT 1 + 1', [], function (txn, result) {
+        txn.executeSql('SELECT 1 + 1', [], function (_txn, result) {
           results[0] = result;
           checkDone();
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
 
-        txn.executeSql('SELECT 2 + 1', [], function (txn, result) {
+        txn.executeSql('SELECT 2 + 1', [], function (_txn, result) {
           results[1] = result;
           checkDone();
-        }, function (txn, err) {
+        }, function (_txn, err) {
           reject(err);
         });
 
@@ -500,7 +527,7 @@ describe('basic test suite', function () {
           }, reject);
 
           db.transaction(function (txn) {
-            txn.executeSql('SELECT * FROM qux', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM qux', [], function (_txn, res) {
               called++;
               assert.equal(res.rows.length, 0);
             });
@@ -519,7 +546,7 @@ function transactionPromise(db, sql, sqlArgs) {
   return new Promise(function (resolve, reject) {
     var result;
     db.transaction(function (txn) {
-      txn.executeSql(sql, sqlArgs, function (txn, res) {
+      txn.executeSql(sql, sqlArgs, function (_txn, res) {
         result = res;
       });
     }, reject, function () {
@@ -532,7 +559,7 @@ function readTransactionPromise(db, sql, sqlArgs) {
   return new Promise(function (resolve, reject) {
     var result;
     db.readTransaction(function (txn) {
-      txn.executeSql(sql, sqlArgs, function (txn, res) {
+      txn.executeSql(sql, sqlArgs, function (_txn, res) {
         result = res;
       });
     }, reject, function () {
@@ -1010,34 +1037,34 @@ describe('advanced test suite - actual DB', function () {
         });
         txn.executeSql('INSERT INTO table1 VALUES ("buzz")', [], function () {
           called.push('b');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'a': rowsToJson(res)});
           });
           txn.executeSql('INSERT INTO table1 VALUES ("hey")', [], null, function () {
             called.push('c');
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'d': rowsToJson(res)});
             });
             txn.executeSql('INSERT INTO table1 VALUES ("baz")', [], function () {
               called.push('f');
-              txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+              txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
                 called.push({'f': rowsToJson(res)});
               });
             });
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'e': rowsToJson(res)});
             });
           });
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'b': rowsToJson(res)});
           });
           txn.executeSql('INSERT INTO table1 VALUES ("haha")', [], null, function () {
             called.push('e');
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'d': rowsToJson(res)});
             });
           });
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'c': rowsToJson(res)});
           });
         });
@@ -1081,34 +1108,34 @@ describe('advanced test suite - actual DB', function () {
         });
         txn.executeSql('INSERT INTO table1 VALUES ("buzz")', [], function () {
           called.push('b');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'a': rowsToJson(res)});
           });
           txn.executeSql('INSERT INTO yolo VALUES ("hey")', [], null, function () {
             called.push('c');
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'d': rowsToJson(res)});
             });
             txn.executeSql('INSERT INTO table1 VALUES ("baz")', [], function () {
               called.push('f');
-              txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+              txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
                 called.push({'f': rowsToJson(res)});
               });
             });
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'e': rowsToJson(res)});
             });
           });
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'b': rowsToJson(res)});
           });
           txn.executeSql('INSERT INTO table1 VALUES ("haha")', [], null, function () {
             called.push('e');
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'d': rowsToJson(res)});
             });
           });
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'c': rowsToJson(res)});
           });
         });
@@ -1153,19 +1180,19 @@ describe('advanced test suite - actual DB', function () {
       db.transaction(function (txn) {
         txn.executeSql('CREATE TABLE table1 (bar text);', [], function () {
           called.push('a');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'1': rowsToJson(res)});
           });
         });
         txn.executeSql('INSERT INTO table1 VALUES ("a")', [], function () {
           called.push('b');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'2': rowsToJson(res)});
           });
         });
         txn.executeSql('INSERT INTO table1 VALUES ("c")', [], function () {
           called.push('c');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'3': rowsToJson(res)});
           });
         });
@@ -1174,7 +1201,7 @@ describe('advanced test suite - actual DB', function () {
         });
         txn.executeSql('CREATE TABLE table1 (bar text);', [], function () {
           called.push('e');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'4': rowsToJson(res)});
           });
         });
@@ -1196,29 +1223,29 @@ describe('advanced test suite - actual DB', function () {
       db.transaction(function (txn) {
         txn.executeSql('CREATE TABLE table1 (bar text);', [], function () {
           called.push('a');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'1': rowsToJson(res)});
           });
         });
-        txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+        txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
           called.push({'z': rowsToJson(res)});
         });
         txn.executeSql('INSERT INTO table1 VALUES ("a")', [], function () {
           called.push('b');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'2': rowsToJson(res)});
           });
         });
-        txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+        txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
           called.push({'x': rowsToJson(res)});
         });
         txn.executeSql('INSERT INTO table1 VALUES ("b")', [], function () {
           called.push('c');
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'3': rowsToJson(res)});
           });
         });
-        txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+        txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
           called.push({'y': rowsToJson(res)});
         });
         txn.executeSql('DROP TABLE table1', [], function () {
@@ -1233,15 +1260,15 @@ describe('advanced test suite - actual DB', function () {
           called.push('e');
           txn.executeSql('INSERT INTO table1 VALUES ("c")', [], function () {
             called.push('w');
-            txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+            txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
               called.push({'v': rowsToJson(res)});
             });
           });
-          txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
             called.push({'4': rowsToJson(res)});
           });
         });
-        txn.executeSql('SELECT * FROM table1', [], function (txn, res) {
+        txn.executeSql('SELECT * FROM table1', [], function (_txn, res) {
           called.push({'x': rowsToJson(res)});
         });
 
@@ -1326,7 +1353,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1362,7 +1389,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1410,7 +1437,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1450,7 +1477,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1493,7 +1520,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1535,7 +1562,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1579,7 +1606,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1636,7 +1663,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1671,7 +1698,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1706,7 +1733,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1734,7 +1761,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1762,7 +1789,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1790,7 +1817,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
@@ -1824,7 +1851,7 @@ describe('advanced test suite - actual DB', function () {
     }).then(function () {
       return new Promise(function (resolve, reject) {
         db.transaction(function (txn) {
-          txn.executeSql('SELECT * FROM table1', [], function (tx, res) {
+          txn.executeSql('SELECT * FROM table1', [], function (_tx, res) {
             called.push(rowsToJson(res));
           });
         }, reject, resolve);
