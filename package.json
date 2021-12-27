@@ -43,6 +43,7 @@
   "dependencies": {
     "argsarray": "^0.0.1",
     "immediate": "^3.2.2",
+    "inherits": "^2.0.4",
     "noop-fn": "^1.0.0",
     "tiny-queue": "^0.2.1"
   },
