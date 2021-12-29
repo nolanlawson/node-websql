@@ -228,7 +228,7 @@ which are surfaced for our users: namely, that statements will only be
 executed up to the first NULL byte and [SQL comments](https://sqlite.org/lang_comment.html)
 will lead to runtime errors.
 
-3. Unfortunatly, `openDatabase` does not throw a `INVALID_STATE_ERR` when the 
+3. Unfortunately, `openDatabase` does not throw a `INVALID_STATE_ERR` when the
 given version does not match the existing version of the database as in the 
 [WebSQL spec](https://www.w3.org/TR/webdatabase/#dom-opendatabase). This is 
 because `openDatabase` needs to query the database to retrive the version and
