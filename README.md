@@ -1,4 +1,4 @@
-node-websql [![Build status](https://circleci.com/gh/nolanlawson/node-websql.svg?style=svg)](https://app.circleci.com/pipelines/gh/nolanlawson/node-websql)
+node-websql
 ====
 
 The [WebSQL Database API][websql], implemented for Node
