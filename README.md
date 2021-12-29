@@ -204,13 +204,6 @@ Or:
 For an example implementation (and the one used by this module)
 see `lib/sqlite/SQLiteDatabase.js`.
 
-TODOs
----
-
-The versioning and migration APIs
-(i.e. [`changeVersion()`](https://www.w3.org/TR/webdatabase/#dom-database-changeversion))
-are not supported. Pull requests welcome!
-
 Limitations
 ----
 
@@ -234,6 +227,14 @@ escaping are [`file::memory:...`](https://sqlite.org/inmemorydb.html)
 which are surfaced for our users: namely, that statements will only be
 executed up to the first NULL byte and [SQL comments](https://sqlite.org/lang_comment.html)
 will lead to runtime errors.
+
+3. Unfortunately, `openDatabase` does not throw a `INVALID_STATE_ERR` when the
+given version does not match the existing version of the database as in the 
+[WebSQL spec](https://www.w3.org/TR/webdatabase/#dom-opendatabase). This is 
+because `openDatabase` needs to query the database to retrive the version and
+that result comes back in a callback, which cannot prevent the database object
+from being returned. Please avoid relying on this feature, opting to use
+`changeVersion` in a migration stratagy.
 
 Testing
 ----
