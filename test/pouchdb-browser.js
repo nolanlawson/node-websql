@@ -4,7 +4,7 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var jsExtend = require('js-extend');
+var jsExtend = require('./jsExtend');
 var jsExtend__default = _interopDefault(jsExtend);
 var debug = _interopDefault(require('debug'));
 var inherits = _interopDefault(require('inherits'));

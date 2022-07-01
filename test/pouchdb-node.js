@@ -4,7 +4,7 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var jsExtend = require('js-extend');
+var jsExtend = require('./jsExtend');
 var jsExtend__default = _interopDefault(jsExtend);
 var debug = _interopDefault(require('debug'));
 var inherits = _interopDefault(require('inherits'));
@@ -2540,7 +2540,11 @@ PouchDB.defaults = function (defaultOpts) {
 
 // May seem redundant, but this is to allow switching with
 // request-browser.js.
-var request = require('request');
+//
+// MODIFIED in node-websql: we don't actually use request in the test suite, so this can be removed
+//
+// var request = require('request');
+var request = undefined;
 
 // non-standard, but we do this to mimic blobs in the browser
 function applyTypeToBuffer(buffer, resp) {
