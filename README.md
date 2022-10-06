@@ -5,7 +5,7 @@ The [WebSQL Database API][websql], implemented for Node
 using [sqlite3](https://github.com/mapbox/node-sqlite3). In the browser, it falls back to `window.openDatabase`.
 
 _**Note:** [WebSQL is being deprecated by browsers](https://developer.chrome.com/blog/deprecating-web-sql/). This package
-is most useful in Node.js or other non-browser environments where you want to emulate WebSQL._
+is most useful in Node.js and other environments where you want to emulate WebSQL._
 
 Install
 ----
